@@ -59,7 +59,7 @@ import { PothosModule } from '@smatch-corp/nestjs-pothos';
   controllers: [],
   providers: [],
 })
-export class AppModule {}****
+export class AppModule {}
 ```
 
 Now you can use `PothosSchemaService`. use it your controllers or anything else.
