@@ -11,6 +11,9 @@
     "graphql-schema",
     "graphql-schema-builder"
   ],
+  "workspaces": [
+    "example"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/smatch-corp/nestjs-pothos.git"
