@@ -2,6 +2,10 @@
 
 Use pothos as GraphQL schema builder in Nest.js application.
 
+## Caution
+
+This is **NOT** production ready yet. API, Module, Service may be have some break changes.
+
 ## Installation
 
 ```bash
