@@ -12,7 +12,7 @@ export interface PothosModuleOptions {
   /**
    * A list of schemas it implements AbstractSchema abstract class and init method.
    */
-  schemas: Provider<AbstractSchema>[];
+  schemas: Provider<AbstractSchema<any>>[];
 
   /**
    * A list of modules that makes schemas let use services.

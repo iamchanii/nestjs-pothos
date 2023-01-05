@@ -6,12 +6,8 @@ import { AbstractSchema } from './schema';
 export class PothosSchemaService {
   constructor(
     @Inject(BUILDER) private readonly builder: PothosSchemaTypes.SchemaBuilder<any>,
-    @Inject(SCHEMA_LIST) private readonly schemaList: AbstractSchema[],
+    @Inject(SCHEMA_LIST) private readonly schemaList: AbstractSchema<any>[],
   ) {
-    this.init();
-  }
-
-  private init() {
     this.schemaList.forEach(schema => {
       schema.init(this.builder);
     });

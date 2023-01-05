@@ -1,9 +1,5 @@
 import type {} from '@pothos/core';
 
-export abstract class AbstractSchema<
-  TBuilder extends PothosSchemaTypes.SchemaBuilder<any> = PothosSchemaTypes.SchemaBuilder<
-    PothosSchemaTypes.ExtendDefaultTypes<any>
-  >,
-> {
-  abstract init(builder: TBuilder): void;
+export interface AbstractSchema<TBuilder extends PothosSchemaTypes.SchemaBuilder<any>> {
+  init(builder: TBuilder): void;
 }
