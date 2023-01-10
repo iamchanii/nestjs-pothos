@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AbstractSchema, BUILDER_TOKEN, PothosRef } from '@smatch-corp/nestjs-pothos';
+import { BUILDER_TOKEN, PothosInit, PothosRef } from '@smatch-corp/nestjs-pothos';
 import { Builder } from 'src/builder/builder';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class PostSchema implements AbstractSchema<Builder> {
+export class PostSchema {
   constructor(
     @Inject(BUILDER_TOKEN) private readonly builder: Builder,
     private readonly prisma: PrismaService,
@@ -22,6 +22,7 @@ export class PostSchema implements AbstractSchema<Builder> {
     });
   }
 
+  @PothosInit()
   init(): void {
     this.builder.queryFields(t => ({
       posts: t.prismaField({

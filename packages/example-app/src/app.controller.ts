@@ -1,21 +1,20 @@
-import { All, Controller, Req, Res } from '@nestjs/common';
-import { PothosSchemaService } from '@smatch-corp/nestjs-pothos';
+import { All, Controller, Inject, OnModuleInit, Req, Res } from '@nestjs/common';
+import { BUILDER_TOKEN } from '@smatch-corp/nestjs-pothos';
 import { Request, Response } from 'express';
 import { GraphQLSchema } from 'graphql';
 import { createYoga, YogaServerInstance } from 'graphql-yoga';
-import { SchemaContext } from 'src/builder/builder';
+import { Builder, SchemaContext } from 'src/builder/builder';
 
 @Controller()
-export class AppController {
+export class AppController implements OnModuleInit {
   schema: GraphQLSchema = null as never;
   yoga: YogaServerInstance<any, any> = null as never;
 
-  constructor(private readonly pothosSchemaService: PothosSchemaService) {
-    this.init();
+  constructor(@Inject(BUILDER_TOKEN) private readonly builder: Builder) {
   }
 
-  private init() {
-    this.schema = this.pothosSchemaService.toSchema();
+  onModuleInit() {
+    this.schema = this.builder.toSchema();
 
     this.yoga = createYoga({
       plugins: [],
