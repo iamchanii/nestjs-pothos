@@ -18,9 +18,4 @@ export interface PothosModuleOptions {
    * A list of modules that makes schemas let use services.
    */
   imports?: ModuleMetadata['imports'];
-
-  /**
-   * @default true
-   */
-  isGlobal?: boolean;
 }
