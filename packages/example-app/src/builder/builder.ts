@@ -13,8 +13,6 @@ interface SchemaBuilderOption {
   PrismaTypes: PrismaTypes;
 }
 
-export type Builder = PothosSchemaTypes.SchemaBuilder<PothosSchemaTypes.ExtendDefaultTypes<SchemaBuilderOption>>;
-
 export function createBuilder(client: PrismaClient) {
   const builder = new SchemaBuilder<SchemaBuilderOption>({
     plugins: [PrismaPlugin],
@@ -25,3 +23,5 @@ export function createBuilder(client: PrismaClient) {
 
   return builder;
 }
+
+export type Builder = ReturnType<typeof createBuilder>;
