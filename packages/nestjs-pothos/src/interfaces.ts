@@ -1,5 +1,5 @@
 import { FactoryProvider, ModuleMetadata, Provider, ValueProvider } from '@nestjs/common';
-import { AbstractSchema } from './schema';
+import type {} from '@pothos/core';
 
 export interface PothosModuleOptions {
   /**
@@ -8,14 +8,4 @@ export interface PothosModuleOptions {
   builder:
     | Omit<FactoryProvider<PothosSchemaTypes.SchemaBuilder<any>>, 'provide'>
     | Omit<ValueProvider<PothosSchemaTypes.SchemaBuilder<any>>, 'provide'>;
-
-  /**
-   * A list of schemas it implements AbstractSchema abstract class and init method.
-   */
-  schemas: Provider<AbstractSchema<any>>[];
-
-  /**
-   * A list of modules that makes schemas let use services.
-   */
-  imports?: ModuleMetadata['imports'];
 }

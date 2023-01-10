@@ -1,28 +1,21 @@
-import { DynamicModule, Inject, Module } from '@nestjs/common';
+import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { DiscoveryModule, DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
-import { BUILDER_TOKEN, POTHOS_REF_TOKEN, SCHEMA_LIST_TOKEN } from './constants';
+import { BUILDER_TOKEN, POTHOS_INIT_TOKEN, POTHOS_REF_TOKEN } from './constants';
 import { PothosModuleOptions } from './interfaces';
-import { AbstractSchema } from './schema';
-import { PothosSchemaService } from './services';
 
 @Module({})
-export class PothosModule {
+export class PothosModule implements OnModuleInit {
   private pothosRefMap = new Map();
 
-  static register(options: PothosModuleOptions): DynamicModule {
+  static forRoot(options: PothosModuleOptions): DynamicModule {
     const builder = { provide: BUILDER_TOKEN, ...options.builder };
-    const schemaList = {
-      provide: SCHEMA_LIST_TOKEN,
-      inject: options.schemas as any,
-      useFactory: (...schemas) => schemas,
-    };
 
     return {
       global: true,
       module: PothosModule,
-      imports: [DiscoveryModule, ...(options.imports ?? [])],
-      providers: [PothosSchemaService, builder, schemaList, ...options.schemas],
-      exports: [PothosSchemaService, builder],
+      imports: [DiscoveryModule],
+      providers: [builder],
+      exports: [builder],
     };
   }
 
@@ -30,38 +23,50 @@ export class PothosModule {
     private readonly discovery: DiscoveryService,
     private readonly scanner: MetadataScanner,
     private readonly reflector: Reflector,
-    @Inject(BUILDER_TOKEN) private readonly builder: PothosSchemaTypes.SchemaBuilder<any>,
-    @Inject(SCHEMA_LIST_TOKEN) private readonly schemaList: AbstractSchema<any>[],
   ) {
-    this.discovery.getProviders()
+  }
+  onModuleInit() {
+    const instanceWrappers = this.discovery.getProviders()
       .filter(wrapper => wrapper.isDependencyTreeStatic())
-      .filter(({ instance }) => instance && Object.getPrototypeOf(instance))
-      .forEach(({ instance }) => {
-        this.scanner.scanFromPrototype(
-          instance,
-          Object.getPrototypeOf(instance),
-          methodName => {
-            const metadata = this.reflector.get(POTHOS_REF_TOKEN, instance[methodName]);
-            if (!metadata) {
-              return;
-            }
+      .filter(({ instance }) => instance && Object.getPrototypeOf(instance));
 
-            const methodRef = instance[methodName];
+    instanceWrappers.forEach(({ instance }) => {
+      this.scanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), methodName => {
+        const metadata = this.reflector.get(POTHOS_REF_TOKEN, instance[methodName]);
+        if (!metadata) {
+          return;
+        }
 
-            instance[methodName] = () => {
-              if (this.pothosRefMap.has(methodRef)) {
-                return this.pothosRefMap.get(methodRef);
-              }
+        // Take origin method reference
+        const methodRef = instance[methodName];
 
-              const pothosRef = methodRef.call(instance, this.builder);
-              this.pothosRefMap.set(methodRef, pothosRef);
+        // Override method that used @PothosRef decorator.
+        instance[methodName] = () => {
+          if (this.pothosRefMap.has(methodRef)) {
+            return this.pothosRefMap.get(methodRef);
+          }
 
-              return pothosRef;
-            };
+          const pothosRef = methodRef.call(instance);
+          this.pothosRefMap.set(methodRef, pothosRef);
 
-            instance[methodName]();
-          },
-        );
+          return pothosRef;
+        };
+
+        // Call overrided method
+        instance[methodName].call(instance);
       });
+    });
+
+    instanceWrappers.forEach(({ instance }) => {
+      this.scanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), methodName => {
+        const metadata = this.reflector.get(POTHOS_INIT_TOKEN, instance[methodName]);
+        if (!metadata) {
+          return;
+        }
+
+        // Call method that used @PothosInit decorator
+        instance[methodName].call(instance);
+      });
+    });
   }
 }
