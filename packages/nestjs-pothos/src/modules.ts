@@ -1,72 +1,23 @@
-import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
-import { DiscoveryModule, DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
-import { BUILDER_TOKEN, POTHOS_INIT_TOKEN, POTHOS_REF_TOKEN } from './constants';
+import { DynamicModule, Module } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
+import { SchemaBuilderToken } from './constants';
 import { PothosModuleOptions } from './interfaces';
+import { SchemaBuilderService } from './services';
 
 @Module({})
-export class PothosModule implements OnModuleInit {
-  private pothosRefMap = new Map();
-
+export class PothosModule {
   static forRoot(options: PothosModuleOptions): DynamicModule {
-    const builder = { provide: BUILDER_TOKEN, ...options.builder };
+    const SchemaBuilderProvider = {
+      provide: SchemaBuilderToken,
+      ...options.builder,
+    };
 
     return {
       global: true,
       module: PothosModule,
       imports: [DiscoveryModule],
-      providers: [builder],
-      exports: [builder],
+      providers: [SchemaBuilderService, SchemaBuilderProvider],
+      exports: [SchemaBuilderService, SchemaBuilderProvider],
     };
-  }
-
-  constructor(
-    private readonly discovery: DiscoveryService,
-    private readonly scanner: MetadataScanner,
-    private readonly reflector: Reflector,
-  ) {
-  }
-  onModuleInit() {
-    const instanceWrappers = this.discovery.getProviders()
-      .filter(wrapper => wrapper.isDependencyTreeStatic())
-      .filter(({ instance }) => instance && Object.getPrototypeOf(instance));
-
-    instanceWrappers.forEach(({ instance }) => {
-      this.scanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), methodName => {
-        const metadata = this.reflector.get(POTHOS_REF_TOKEN, instance[methodName]);
-        if (!metadata) {
-          return;
-        }
-
-        // Take origin method reference
-        const methodRef = instance[methodName];
-
-        // Override method that used @PothosRef decorator.
-        instance[methodName] = () => {
-          if (this.pothosRefMap.has(methodRef)) {
-            return this.pothosRefMap.get(methodRef);
-          }
-
-          const pothosRef = methodRef.call(instance);
-          this.pothosRefMap.set(methodRef, pothosRef);
-
-          return pothosRef;
-        };
-
-        // Call overrided method
-        instance[methodName].call(instance);
-      });
-    });
-
-    instanceWrappers.forEach(({ instance }) => {
-      this.scanner.scanFromPrototype(instance, Object.getPrototypeOf(instance), methodName => {
-        const metadata = this.reflector.get(POTHOS_INIT_TOKEN, instance[methodName]);
-        if (!metadata) {
-          return;
-        }
-
-        // Call method that used @PothosInit decorator
-        instance[methodName].call(instance);
-      });
-    });
   }
 }

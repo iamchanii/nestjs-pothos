@@ -1,3 +1,5 @@
-export const BUILDER_TOKEN = Symbol('BUILDER');
-export const POTHOS_REF_TOKEN = Symbol('POTHOS_REF');
-export const POTHOS_INIT_TOKEN = Symbol('POTHOS_INIT');
+export const SchemaBuilderToken = Symbol('SchemaBuilderToken');
+
+// Only for internal uses:
+export const InternalPothosRefToken = Symbol('POTHOS_REF');
+export const InternalPothosInitToken = Symbol('POTHOS_INIT');
