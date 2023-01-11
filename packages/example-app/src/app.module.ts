@@ -27,7 +27,7 @@ import { PrismaModule } from './prisma/prisma.module';
         const schema = schemaBuilder.getSchema();
 
         return {
-          schema: schema,
+          schema,
           playground: true,
         };
       },

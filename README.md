@@ -1,4 +1,4 @@
-# nestjs-pothos
+# @smatch-corp/nestjs-pothos
 
 Use pothos as GraphQL schema builder in Nest.js application.
 
@@ -6,19 +6,20 @@ Use pothos as GraphQL schema builder in Nest.js application.
 
 This is **NOT** production ready yet. API, Module, Service may be have some break changes.
 
-## Installation
+## Getting Started
+
+### Installation
 
 ```bash
 $ yarn add @smatch-corp/nestjs-pothos
 ```
 
-## Getting Started
+### Setup
 
-### 1. Write a factory to create own SchemaBuilder
-
-And you have to get a type and export it of your SchemaBuilder.
+Write a factory to create own `SchemaBuilder` and you have to get a type and export it of your `SchemaBuilder`.
 
 ```ts
+// builder.ts
 interface SchemaBuilderOption {}
 
 export function createBuilder() {
@@ -36,15 +37,53 @@ export function createBuilder() {
 export type Builder = ReturnType<typeof createBuilder>
 ```
 
-### 2. Use `@PothosRef`, `@PothosInit` decorators
+Add `PothosModule` into your AppModule.
 
-The `@PothosRef` decorator is (TBD)
+```ts
+@Module({
+  imports: [
+    // ...
+    PothosModule.forRoot({
+      builder: {
+        useFactory: createBuilder,
+      },
+    }),
+  ],
+  controllers: [/* ... */],
+  providers: [/* ... */],
+})
+export class AppModule {}
+```
+
+If you're using Pothos with Prisma, you can inject your `PrismaClient` and pass to your factory function as parameter.
+
+```ts
+@Module({
+  imports: [
+    // ...
+    PrismaModule,
+    PothosModule.forRoot({
+      builder: {
+        inject: [PrismaService],
+        useFactory: (prisma) => createBuilder(prisma),
+      },
+    }),
+  ],
+  controllers: [/* ... */],
+  providers: [/* ... */],
+})
+export class AppModule {}
+```
+
+### Use `SchemaBuilder` and `@PothosRef`, `@PothosInit`
+
+Now you can use own SchemaBuilder by `@Inject(SchemaBuilderToken)`. use it with `@PothosRef` and `@PothosInit` decorators.
 
 ```ts
 @Injectable()
 export class UserSchema {
   constructor(
-    @Inject(BUILDER_TOKEN) private readonly builder: Builder,
+    @Inject(SchemaBuilderToken) private readonly builder: Builder,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -57,23 +96,6 @@ export class UserSchema {
         posts: t.relation('posts'),
       }),
     });
-  }
-}
-```
-
-And `@PothosInit` decorator is (TBD)
-
-```ts
-@Injectable()
-export class UserSchema {
-  constructor(
-    @Inject(BUILDER_TOKEN) private readonly builder: Builder,
-    private readonly prisma: PrismaService,
-  ) {}
-
-  @PothosRef()
-  user() {
-    // ...
   }
 
   @PothosInit()
@@ -88,63 +110,53 @@ export class UserSchema {
 }
 ```
 
-### 3. Export your schema
+Add your injectable class it used `@PothosRef` or `@PothosInit` to module's providers and import from your application module.
 
 ```ts
+// user.module.ts
 @Module({
   providers: [UserSchema],
 })
 export class UserModule {}
-```
 
-### 4. Add `PothosModule` into your root module
-
-```ts
+// app.module.ts
 @Module({
   imports: [
+    PrismaModule,
     UserModule,
-    PothosModule.forRoot({
-      builder: {
-        useFactory: createBuilder,
-      },
-    }),
+    PothosModule.forRoot({ /* ... */ }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
 ```
 
-Now you can use your SchemaBuilder by `@Inject(BUILDER_TOKEN)`. use it your controllers or anything else.
+You can get your `GraphQLSchema` by `SchemaBuilderService.getSchema()`. so you can set up your GraphQL endpoint as you want. below is an example of using `GraphQLModule`.
 
 ```ts
-@Controller()
-export class AppController implements OnModuleInit {
-  schema: GraphQLSchema = null as never;
-  yoga: YogaServerInstance<any, any> = null as never;
+@Module({
+  imports: [
+    PrismaModule,
+    UserModule,
+    PothosModule.forRoot({ /* ... */ }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      inject: [SchemaBuilderService],
+      useFactory: async (schemaBuilder: SchemaBuilderService) => {
+        const schema = schemaBuilder.getSchema();
 
-  constructor(@Inject(BUILDER_TOKEN) private readonly builder: Builder) {
-  }
-
-  onModuleInit() {
-    this.schema = this.builder.toSchema();
-
-    this.yoga = createYoga({
-      plugins: [],
-      schema: this.schema,
-    });
-  }
-
-  @All('graphql')
-  graphql(@Req() req: Request, @Res() res: Response) {
-    const context: SchemaContext = {
-      req,
-    };
-
-    this.yoga(req, res, context);
-  }
-}
+        return {
+          schema,
+          playground: true,
+          // ...
+        };
+      },
+    }),
+  ],
+})
+export class AppModule {}
 ```
+
+To check working example, please refer [example-app](https://github.com/smatch-corp/nestjs-pothos/blob/main/packages/example-app) package.
 
 ## License
 
