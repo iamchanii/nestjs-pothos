@@ -1,10 +1,11 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { PothosModule } from '@smatch-corp/nestjs-pothos';
+import { GraphQLModule } from '@nestjs/graphql';
+import { PothosModule, SchemaBuilderService } from '@smatch-corp/nestjs-pothos';
 import { createBuilder } from 'src/builder/builder';
 import { PostModule } from 'src/post/post.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserModule } from 'src/user/user.module';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -19,8 +20,19 @@ import { PrismaModule } from './prisma/prisma.module';
         useFactory: (prisma: PrismaService) => createBuilder(prisma),
       },
     }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      inject: [SchemaBuilderService],
+      useFactory: async (schemaBuilder: SchemaBuilderService) => {
+        const schema = schemaBuilder.getSchema();
+
+        return {
+          schema: schema,
+          playground: true,
+        };
+      },
+    }),
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

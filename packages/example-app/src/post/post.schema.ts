@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { BUILDER_TOKEN, PothosInit, PothosRef } from '@smatch-corp/nestjs-pothos';
+import { PothosInit, PothosRef, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
 import { Builder } from 'src/builder/builder';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PostSchema {
   constructor(
-    @Inject(BUILDER_TOKEN) private readonly builder: Builder,
+    @Inject(SchemaBuilderToken) private readonly builder: Builder,
     private readonly prisma: PrismaService,
   ) {}
 
