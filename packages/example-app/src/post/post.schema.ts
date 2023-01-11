@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PothosInit, PothosRef, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
+import { Pothos, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
 import { Builder } from 'src/builder/builder';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -10,7 +10,7 @@ export class PostSchema {
     private readonly prisma: PrismaService,
   ) {}
 
-  @PothosRef()
+  @Pothos()
   post() {
     return this.builder.prismaObject('Post', {
       fields: t => ({
@@ -22,7 +22,7 @@ export class PostSchema {
     });
   }
 
-  @PothosInit()
+  @Pothos()
   init(): void {
     this.builder.queryFields(t => ({
       posts: t.prismaField({

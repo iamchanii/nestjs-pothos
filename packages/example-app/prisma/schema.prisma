@@ -15,15 +15,32 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
+  id   Int    @id @default(autoincrement())
+  name String
+
   posts Post[]
+
+  Comment Comment[]
 }
 
 model Post {
-  id       Int    @id @default(autoincrement())
-  title    String
-  content  String
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId Int    @map("userId")
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int  @map("userId")
+
+  Comment Comment[]
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  writer   User @relation(fields: [writerId], references: [id])
+  writerId Int  @map("userId")
+
+  post   Post @relation(fields: [postId], references: [id])
+  postId Int
 }

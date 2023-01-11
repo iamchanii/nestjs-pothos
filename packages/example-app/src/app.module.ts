@@ -1,11 +1,13 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
-import { PothosModule, SchemaBuilderService } from '@smatch-corp/nestjs-pothos';
-import { createBuilder } from 'src/builder/builder';
-import { PostModule } from 'src/post/post.module';
+import { PothosModule, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
+import { printSchema } from 'graphql';
+import { Builder, createBuilder } from 'src/builder/builder';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserModule } from 'src/user/user.module';
+import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -13,26 +15,31 @@ import { PrismaModule } from './prisma/prisma.module';
   imports: [
     PrismaModule,
     UserModule,
-    PostModule,
+    // PostModule,
+    // CommentModule,
     PothosModule.forRoot({
       builder: {
         inject: [PrismaService],
         useFactory: (prisma: PrismaService) => createBuilder(prisma),
       },
-    }),
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      inject: [SchemaBuilderService],
-      useFactory: async (schemaBuilder: SchemaBuilderService) => {
-        const schema = schemaBuilder.getSchema();
+      loadGqlModule: () =>
+        GraphQLModule.forRootAsync<ApolloDriverConfig>({
+          driver: ApolloDriver,
+          inject: [ModuleRef],
+          useFactory: async (moduleRef: ModuleRef) => {
+            const builder = moduleRef.get(SchemaBuilderToken);
+            // const schema = builder.toSchema();
+            // console.log(printSchema(schema));
 
-        return {
-          schema,
-          playground: true,
-        };
-      },
+            return {
+              schema: {} as any,
+              playground: true,
+            };
+          },
+        }),
     }),
   ],
   providers: [AppService],
+  controllers: [AppController],
 })
 export class AppModule {}

@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UserSchema } from './user.schema';
-import { UserService } from './user.service';
 
+@Global()
 @Module({
-  providers: [UserService, UserSchema],
+  providers: [UserSchema],
+  exports: [UserSchema],
 })
 export class UserModule {}

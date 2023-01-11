@@ -28,8 +28,10 @@
     "prepublish": "yarn build"
   },
   "devDependencies": {
+    "@nestjs/apollo": "^10.1.7",
     "@nestjs/common": "^9.2.1",
     "@nestjs/core": "^9.2.1",
+    "@nestjs/graphql": "^10.1.7",
     "@pothos/core": "^3.24.0",
     "@types/node": "^18.11.18",
     "graphql": "^16.6.0",
@@ -41,6 +43,7 @@
   "peerDependencies": {
     "@nestjs/common": "^7 || ^8 || ^9",
     "@nestjs/core": "^7 || ^8 || ^9",
+    "@nestjs/graphql": "*",
     "@pothos/core": "^3",
     "rxjs": "*"
   }
