@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Pothos, PothosSchema, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
+import { Pothos, PothosRef, PothosSchema, SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
 import { Builder } from 'src/builder/builder';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -12,7 +12,7 @@ export class UserSchema extends PothosSchema {
     super();
   }
 
-  @Pothos()
+  @PothosRef()
   user() {
     return this.builder.prismaObject('User', {
       fields: t => ({

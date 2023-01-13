@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/apollo": "^10.1.7",
+    "@nestjs/apollo": "^10",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/graphql": "^10.1.7",
@@ -30,6 +30,7 @@
     "@pothos/plugin-prisma": "^3.40.0",
     "@prisma/client": "^4.8.1",
     "@smatch-corp/nestjs-pothos": "workspace:^",
+    "@smatch-corp/nestjs-pothos-apollo-driver": "workspace:^",
     "apollo-server-express": "^3.11.1",
     "graphql": "^16.6.0",
     "graphql-yoga": "^3",
