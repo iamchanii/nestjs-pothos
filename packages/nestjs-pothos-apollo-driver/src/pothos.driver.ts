@@ -1,9 +1,9 @@
 import { ApolloDriver } from '@nestjs/apollo';
 import { Injectable } from '@nestjs/common';
 import { ModulesContainer } from '@nestjs/core';
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import { GqlModuleOptions } from '@nestjs/graphql';
-import { SchemaBuilderToken } from './constants';
+import type { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
+import type { GqlModuleOptions } from '@nestjs/graphql';
+import { SchemaBuilderToken } from '@smatch-corp/nestjs-pothos';
 
 @Injectable()
 export class PothosApolloDriver extends ApolloDriver {
@@ -12,7 +12,7 @@ export class PothosApolloDriver extends ApolloDriver {
   }
 
   start(options: GqlModuleOptions<any>): Promise<void> {
-    let schemaBuilder: InstanceWrapper = null as never;
+    let schemaBuilder: InstanceWrapper | null = null;
 
     for (const mod of this.modulesContainer.values()) {
       schemaBuilder = Array.from(mod.providers.values()).find(({ token }) => token === SchemaBuilderToken)!;
@@ -22,8 +22,14 @@ export class PothosApolloDriver extends ApolloDriver {
       }
     }
 
-    const schema = schemaBuilder.instance.toSchema();
+    if (!schemaBuilder) {
+      throw Error('Cannot get provided builder as SchemaBuilderToken.');
+    }
 
-    return super.start({ ...options, schema });
+    return super.start({
+      ...options,
+      // TODO: apply schema transform (e.g. using mapSchema)
+      schema: schemaBuilder.instance.toSchema(),
+    });
   }
 }
