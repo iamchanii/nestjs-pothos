@@ -1,4 +1,4 @@
-# @smatch-corp/nestjs-pothos-example-app
+# with-express-apollo
 
 An example application to develop @smatch-corp/nestjs-pothos package.
 

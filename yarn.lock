@@ -1922,51 +1922,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@smatch-corp/with-express-apollo@workspace:examples/with-express-apollo":
-  version: 0.0.0-use.local
-  resolution: "@smatch-corp/with-express-apollo@workspace:examples/with-express-apollo"
-  dependencies:
-    "@nestjs/apollo": ^10
-    "@nestjs/cli": ^9.0.0
-    "@nestjs/common": ^9.0.0
-    "@nestjs/core": ^9.0.0
-    "@nestjs/graphql": ^10.1.7
-    "@nestjs/platform-express": ^9.0.0
-    "@nestjs/schematics": ^9.0.0
-    "@nestjs/testing": ^9.0.0
-    "@pothos/core": ^3.24.0
-    "@pothos/plugin-prisma": ^3.40.0
-    "@prisma/client": ^4.8.1
-    "@smatch-corp/nestjs-pothos": "workspace:^"
-    "@smatch-corp/nestjs-pothos-apollo-driver": "workspace:^"
-    "@types/express": ^4.17.13
-    "@types/jest": 28.1.8
-    "@types/node": ^18.11.18
-    "@types/supertest": ^2.0.11
-    "@typescript-eslint/eslint-plugin": ^5.0.0
-    "@typescript-eslint/parser": ^5.0.0
-    apollo-server-express: ^3.11.1
-    eslint: ^8.0.1
-    eslint-config-prettier: ^8.3.0
-    eslint-plugin-prettier: ^4.0.0
-    graphql: ^16.6.0
-    graphql-yoga: ^3
-    jest: 28.1.3
-    prettier: ^2.3.2
-    prisma: ^4.8.1
-    reflect-metadata: ^0.1.13
-    rimraf: ^3.0.2
-    rxjs: ^7.2.0
-    source-map-support: ^0.5.20
-    supertest: ^6.1.3
-    ts-jest: 28.0.8
-    ts-loader: ^9.2.3
-    ts-node: ^10.0.0
-    tsconfig-paths: 4.1.0
-    typescript: ^4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -8761,6 +8716,51 @@ __metadata:
   checksum: 77c87d332d9e8ad94a72844c0bee169babd63ab06636521fc6ffacb2f1fb2ec3f38b81bc3fcb53ec76b57c1add33348c16660a38ac6aed381190d9c2b95c39e6
   languageName: node
   linkType: hard
+
+"with-express-apollo@workspace:examples/with-express-apollo":
+  version: 0.0.0-use.local
+  resolution: "with-express-apollo@workspace:examples/with-express-apollo"
+  dependencies:
+    "@nestjs/apollo": ^10
+    "@nestjs/cli": ^9.0.0
+    "@nestjs/common": ^9.0.0
+    "@nestjs/core": ^9.0.0
+    "@nestjs/graphql": ^10.1.7
+    "@nestjs/platform-express": ^9.0.0
+    "@nestjs/schematics": ^9.0.0
+    "@nestjs/testing": ^9.0.0
+    "@pothos/core": ^3.24.0
+    "@pothos/plugin-prisma": ^3.40.0
+    "@prisma/client": ^4.8.1
+    "@smatch-corp/nestjs-pothos": "workspace:^"
+    "@smatch-corp/nestjs-pothos-apollo-driver": "workspace:^"
+    "@types/express": ^4.17.13
+    "@types/jest": 28.1.8
+    "@types/node": ^18.11.18
+    "@types/supertest": ^2.0.11
+    "@typescript-eslint/eslint-plugin": ^5.0.0
+    "@typescript-eslint/parser": ^5.0.0
+    apollo-server-express: ^3.11.1
+    eslint: ^8.0.1
+    eslint-config-prettier: ^8.3.0
+    eslint-plugin-prettier: ^4.0.0
+    graphql: ^16.6.0
+    graphql-yoga: ^3
+    jest: 28.1.3
+    prettier: ^2.3.2
+    prisma: ^4.8.1
+    reflect-metadata: ^0.1.13
+    rimraf: ^3.0.2
+    rxjs: ^7.2.0
+    source-map-support: ^0.5.20
+    supertest: ^6.1.3
+    ts-jest: 28.0.8
+    ts-loader: ^9.2.3
+    ts-node: ^10.0.0
+    tsconfig-paths: 4.1.0
+    typescript: ^4.7.4
+  languageName: unknown
+  linkType: soft
 
 "word-wrap@npm:^1.2.3":
   version: 1.2.3

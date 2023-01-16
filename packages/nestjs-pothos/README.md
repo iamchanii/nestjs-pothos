@@ -75,17 +75,17 @@ If you're using Pothos with Prisma, you can inject your `PrismaClient` and pass 
 export class AppModule {}
 ```
 
-### Use `SchemaBuilder` and `@PothosRef`, `@PothosInit`
-
-Now you can use own SchemaBuilder by `@Inject(SchemaBuilderToken)`. use it with `@PothosRef` and `@PothosInit` decorators.
+### Usage
 
 ```ts
 @Injectable()
-export class UserSchema {
+export class UserSchema extends PothosSchema {
   constructor(
     @Inject(SchemaBuilderToken) private readonly builder: Builder,
     private readonly prisma: PrismaService,
-  ) {}
+  ) {
+    super();
+  }
 
   @PothosRef()
   user() {
@@ -98,7 +98,7 @@ export class UserSchema {
     });
   }
 
-  @PothosInit()
+  @Pothos()
   init() {
     this.builder.queryFields(t => ({
       users: t.prismaField({
@@ -110,53 +110,13 @@ export class UserSchema {
 }
 ```
 
-Add your injectable class it used `@PothosRef` or `@PothosInit` to module's providers and import from your application module.
+- `PothosSchema` is a class that helps create a GraphQL schema using the Pothos. It's often used by other classes to define different types and fields in the schema.
 
-```ts
-// user.module.ts
-@Module({
-  providers: [UserSchema],
-})
-export class UserModule {}
+- The `@PothosRef()` decorator is used to make a Pothos's ref object, which represents a specific model or resource in the schema.
 
-// app.module.ts
-@Module({
-  imports: [
-    PrismaModule,
-    UserModule,
-    PothosModule.forRoot({ /* ... */ }),
-  ],
-})
-export class AppModule {}
-```
+- The `@Pothos()` decorator is used to set up the schema, usually by defining fields on the root Query type. These fields determine how data is retrieved from the backend and can include resolvers that query a specific model or resource.
 
-You can get your `GraphQLSchema` by `SchemaBuilderService.getSchema()`. so you can set up your GraphQL endpoint as you want. below is an example of using `GraphQLModule`.
-
-```ts
-@Module({
-  imports: [
-    PrismaModule,
-    UserModule,
-    PothosModule.forRoot({ /* ... */ }),
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      inject: [SchemaBuilderService],
-      useFactory: async (schemaBuilder: SchemaBuilderService) => {
-        const schema = schemaBuilder.getSchema();
-
-        return {
-          schema,
-          playground: true,
-          // ...
-        };
-      },
-    }),
-  ],
-})
-export class AppModule {}
-```
-
-To check working example, please refer [example-app](https://github.com/smatch-corp/nestjs-pothos/blob/main/packages/example-app) package.
+Now you can get executable GraphQL Schema via `builder` which injected by `@Inject(SchemaBuilderToken)`.
 
 ## License
 
